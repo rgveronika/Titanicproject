@@ -1,6 +1,6 @@
 ## My Project
 
-I applied machine learning techniques to investigate the Titanic's passenger surgvival. Below is my report.
+I applied machine learning techniques to investigate the Titanic's passenger survival. Below is my report.
 
 ***
 
@@ -41,7 +41,12 @@ Correlation Matrix: Generated a heatmap to visualize correlations between featur
 ## Modelling
 
 I compared the performance of five models: Logistic Regression, Decision Trees, Random Forests, Support Vector Machines, and Multi-Layer Perceptrons.
-1. Logistic Regression
+
+For the modeling section, I set the maximum iterations (max_iter) to 20,000 in the logistic regression model and MLP model. This parameter is a hyperparameter that determines the maximum number of optimization iterations the solver will perform to converge to the best solution. Setting it to a high value ensures that the model has enough iterations to find the optimal weights, especially when dealing with complex datasets. This prevents the solver from stopping prematurely before reaching convergence, which could result in suboptimal model performance.
+
+Additionally, it is important to note that you might observe slight variations in accuracy scores if the models are run again. These differences can occur due to factors such as random initialization, the randomness involved in splitting the dataset into training and testing subsets, or stochastic processes in certain models like neural networks. Such variability underscores the importance of running multiple experiments and averaging the results to assess model performance more robustly.
+
+1. Logistic Regression:
 Logistic regression is a linear model that predicts the probability of binary outcomes. It separates classes by identifying a linear combination of properties.
 Why it's appropriate: It works well and is interpretable when relationships between variables are mostly linear.
 
@@ -58,15 +63,16 @@ y_pred = model.predict(X_Test)
 accuracy = accuracy_score(y_Test, y_pred)
 print("LR Accuracy:", accuracy)
 ```
+LR Accuracy: 0.76
 
 Confusion Matrix:
 Correctly predicted both survivors and non-survivors with relatively few errors.
 ![image](https://github.com/user-attachments/assets/54722b77-b220-4402-abf0-4bf6d74374a5)
 Strength: Simple, interpretable, and performs well on structured data.
 
-2. Decision Trees
+2. Decision Trees:
 Decision trees split the data into branches based on feature thresholds. Although they are simple to comprehend, they are prone to overfitting.
-Why it's appropriate: useful for identifying patterns that are not linear.
+Why it's appropriate: useful for identifying patterns that are not linear, also makes very clear the method that the model is using for its decisions.
 
 ```python
 from sklearn.tree import DecisionTreeClassifier
@@ -77,13 +83,14 @@ y_pred = dc_model.predict(X_Test)
 accuracy = accuracy_score(y_Test, y_pred)
 print("DT Accuracy:", accuracy)
 ```
+DT Accuracy: 0.77
 
 Confusion Matrix:
 Slightly higher overfitting compared to Logistic Regression.
 ![image](https://github.com/user-attachments/assets/a4ebdfd6-af18-4458-9476-7c50ec703092)
 Strength: Captures non-linear patterns but prone to overfitting without pruning.
 
-3. Random Forest
+3. Random Forest:
 A random forest is an ensemble of decision trees, which reduces overfitting and averages forecasts to increase accuracy.
 Why it's appropriate: combines low variance with excellent accuracy.
 
@@ -105,13 +112,14 @@ dot_data = export_graphviz(best_tree, out_file=None, feature_names=X.columns, cl
 graph = graphviz.Source(dot_data)
 graph.render("random_forest_tree")
 ```
+RF Accuracy: 0.76
 
 Confusion Matrix:
 Balanced predictions with fewer errors across both classes.
 ![image](https://github.com/user-attachments/assets/f49683ef-9ddf-412b-80f2-710240d2ed37)
 Strength: Reduces overfitting and provides feature importance.
 
-The Random Forest Best Fit Tree Visualization makes it easy to understand how the model makes decisions. Whether the passenger was in third class (Pclass = 3) is the most important factor affecting survivability, and this is where the tree starts. Since it had the biggest influence on survival prediction, this feature acts as the primary decision point.
+The Random Forest Best Fit Tree Visualization makes it easy to understand how the model makes decisions. The random forest model determined whether the passenger was in third class (Pclass = 3) is the most important factor affecting survivability, and this is where the tree starts. Since it had the biggest influence on survival prediction, this feature acts as the primary decision point.
 
 The left branch of the model indicates a better chance of survival if the passenger was not in third class (Pclass ≠ 3).
 After that, the following choice usually considers sex, where being female greatly improves survival odds.
@@ -126,7 +134,7 @@ Best Fit Tree Visualization:
 
 
 
-4. Support Vector Machines
+4. Support Vector Machines:
 SVMs use an ideal hyperplane to categorize data. To handle non-linear decision boundaries, we used a polynomial kernel. Why it's appropriate: useful for intricate connections in smaller datasets.
 
 ```python
@@ -138,15 +146,15 @@ y_pred = model.predict(X_Test)
 accuracy = accuracy_score(y_Test, y_pred)
 print("SVM Accuracy:", accuracy)
 ```
+SVM Accuracy: 0.76
 
 Confusion Matrix:
-Effective but slightly less consistent than Random Forest.
 ![image](https://github.com/user-attachments/assets/60446ddf-2f13-4e39-9d53-f832aa11bffc)
 Strength: Captures complex patterns but computationally expensive for large datasets.
 
 
 
-5. Neural Networks (MLP)
+5. Neural Networks (MLP):
 An MLP is a type of neural network that can recognize hierarchical patterns.
 Why it's appropriate: able to simulate intricate non-linear interactions found in the dataset.
 
@@ -159,31 +167,38 @@ y_pred = mlp_model.predict(X_Test)
 accuracy = accuracy_score(y_Test, y_pred)
 print("MLP Accuracy:", accuracy)
 ```
+MLP Accuracy: 0.76
 
 Confusion Matrix:
 Slightly higher accuracy, with robust handling of non-linearity.
 ![image](https://github.com/user-attachments/assets/57a8f110-00b5-44a7-9bde-eb0895665876)
 Strength: Powerful, but requires more computational resources and fine-tuning.
 
+For the Multilayer Perceptron (MLP) model, I chose a specific arrangement of hidden layers with 16 nodes in the first hidden layer and 8 nodes in the second hidden layer. The reasoning behind this configuration is as follows:
+
+The first hidden layer contains 16 nodes because 16 is the nearest power of 2 to the number of features (14) without going under it. Using powers of 2 is a common practice in neural network design, as these configurations often yield better performance due to optimization efficiency in underlying computational processes.
+
+The second hidden layer contains 8 nodes, which is half the size of the first layer. This reduction creates a "bridging" layer that computes the relationships between features learned in the first layer and prepares the data for the 2-node output layer, which represents the binary classification task (survival or not). The reduced size also helps prevent overfitting while retaining the model's ability to learn complex relationships between features.
+
 
 ## Results
 
 Comparison of Models:
-Logistic Regression, Random Forest, and MLP performed similarly, achieving the highest accuracy scores (~0.80-0.83).
+Logistic Regression, Random Forest, and MLP performed similarly, achieving the highest accuracy scores (~0.76-0.77).
 Decision Trees and SVMs performed slightly worse, likely due to overfitting or sensitivity to parameter tuning.
 
 ROC Curve:
 The ROC curve demonstrated that Logistic Regression, Random Forest, and MLP had the highest AUC values.
 
 ![image](https://github.com/user-attachments/assets/1f5baa48-a14e-4027-88e7-fd824c760e7a)
-Start from the top left corner, the line closest to the corner is the best model with recall and precision
+Start from the top left corner, the line closest to the corner is the best model with recall and precision.
 
 
 ## Discussion
 
-With similar accuracy, the top three models were MLP, Random Forest, and Logistic Regression. Logistic Regression is the most interpretable, making it suitable for explaining the results to non-technical audiences. Random Forest offers strong performance and insights into feature importance, but MLP successfully captured non-linear correlations.
+With similar accuracy, the top three models were MLP, Random Forest, and Logistic Regression. Random Forest is the most interpretable, making it suitable for explaining the results to non-technical audiences. Random Forest offers strong performance and insights into feature importance, but MLP successfully captured non-linear correlations.
 
-Random Forest and Logistic Regression had similar scores because both made effective use of the most crucial characteristics (Sex, Pclass, Age, etc.). Overfitting caused Decision Trees to perform slightly worse, and SVM had trouble with parameter sensitivity.
+Looking at the confusion matrices for both the Random Forest and Logistic Regression models, we can see that they are identical. This might suggest that reviewing the tree from the Random Forest could not only explain how the Random Forest made its decisions but also provide insights into how the Logistic Regression evaluated each passenger. Random Forest and Logistic Regression had similar scores because both made effective use of the most crucial characteristics (Sex, Pclass, Age, etc.). Overfitting caused Decision Trees to perform slightly worse, and SVM had trouble with parameter sensitivity.
 
 ## Conclusion
 
@@ -199,6 +214,4 @@ To further increase prediction accuracy, investigate deep learning models with i
 To generalize findings and broaden the use of these techniques, apply comparable models to additional datasets with survival-based outcomes, such as healthcare or disaster aid datasets.
 
 ## References
-[1] DALL-E 3
-
-[back](./)
+Titanic, Machine Learning from Disaster (https://www.kaggle.com/c/titanic/data)
